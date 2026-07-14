@@ -2,6 +2,16 @@
 #include <fstream>
 #include <string>
 
+std::string trim(const std::string& str)
+{
+    size_t first = str.find_first_not_of(" \t\r\n");
+    if (first == std::string::npos) {
+        return "";
+    }
+    size_t last = str.find_last_not_of(" \t\r\n");
+    return str.substr(first, last - first + 1);
+}
+
 int main(int argc, char* argv[])
 {
     if (argc < 2) {
@@ -17,11 +27,20 @@ int main(int argc, char* argv[])
         return 1;
     }
 
+    std::string outPath = filePath.substr(0, filePath.find_last_of('.')) + "_cleaned.csv";
+    std::ofstream outFile(outPath);
+
     std::string line;
     while (std::getline(file, line)) {
-        std::cout << line << std::endl;
+        if (trim(line).empty()) {
+            continue;
+        }
+        outFile << line << std::endl;
     }
 
     file.close();
+    outFile.close();
+
+    std::cout << "已清洗完成，输出文件: " << outPath << std::endl;
     return 0;
 }
