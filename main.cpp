@@ -2,6 +2,8 @@
 #include <fstream>
 #include <string>
 #include <unordered_set>
+#include <sstream>
+#include <vector>
 
 std::string trim(const std::string& str)
 {
@@ -11,6 +13,22 @@ std::string trim(const std::string& str)
     }
     size_t last = str.find_last_not_of(" \t\r\n");
     return str.substr(first, last - first + 1);
+}
+
+std::string trimFields(const std::string& line)
+{
+    std::vector<std::string> fields;
+    std::stringstream ss(line);
+    std::string field;
+    while (std::getline(ss, field, ',')) {
+        fields.push_back(trim(field));
+    }
+    std::string result;
+    for (size_t i = 0; i < fields.size(); ++i) {
+        if (i > 0) result += ",";
+        result += fields[i];
+    }
+    return result;
 }
 
 int main(int argc, char* argv[])
@@ -36,18 +54,19 @@ int main(int argc, char* argv[])
 
     std::string line;
     while (std::getline(file, line)) {
-        std::string trimmed = trim(line);
+        std::string cleaned = trimFields(line);
+        std::string trimmed = trim(cleaned);
         if (trimmed.empty()) {
             continue;
         }
         if (isHeader) {
-            outFile << line << std::endl;
+            outFile << cleaned << std::endl;
             isHeader = false;
             continue;
         }
         if (seen.find(trimmed) == seen.end()) {
             seen.insert(trimmed);
-            outFile << line << std::endl;
+            outFile << cleaned << std::endl;
         }
     }
 
