@@ -1,0 +1,22 @@
+# C++ 编译产物
+*.exe
+*.o
+*.obj
+*.out
+
+# 调试文件
+*.pdb
+*.ilk
+*.dSYM/
+
+# 清洗后输出文件
+*_cleaned.csv
+
+# Windows 系统临时文件
+Thumbs.db
+*.log
+*.tmp
+
+# VS Code 编辑器缓存
+.vscode/
+*.code-workspace
