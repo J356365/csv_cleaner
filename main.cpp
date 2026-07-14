@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <unordered_set>
 
 std::string trim(const std::string& str)
 {
@@ -30,12 +31,24 @@ int main(int argc, char* argv[])
     std::string outPath = filePath.substr(0, filePath.find_last_of('.')) + "_cleaned.csv";
     std::ofstream outFile(outPath);
 
+    std::unordered_set<std::string> seen;
+    bool isHeader = true;
+
     std::string line;
     while (std::getline(file, line)) {
-        if (trim(line).empty()) {
+        std::string trimmed = trim(line);
+        if (trimmed.empty()) {
             continue;
         }
-        outFile << line << std::endl;
+        if (isHeader) {
+            outFile << line << std::endl;
+            isHeader = false;
+            continue;
+        }
+        if (seen.find(trimmed) == seen.end()) {
+            seen.insert(trimmed);
+            outFile << line << std::endl;
+        }
     }
 
     file.close();
