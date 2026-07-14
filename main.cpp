@@ -58,23 +58,33 @@ int main(int argc, char* argv[])
     std::unordered_set<std::string> seen;
     bool isHeader = true;
     bool hasData = false;
+    int totalLines = 0;
+    int blankLines = 0;
+    int duplicateLines = 0;
+    int keptLines = 0;
 
     std::string line;
     while (std::getline(file, line)) {
+        ++totalLines;
         std::string cleaned = trimFields(line);
         std::string trimmed = trim(cleaned);
         if (trimmed.empty()) {
+            ++blankLines;
             continue;
         }
         hasData = true;
         if (isHeader) {
             outFile << cleaned << std::endl;
             isHeader = false;
+            ++keptLines;
             continue;
         }
         if (seen.find(trimmed) == seen.end()) {
             seen.insert(trimmed);
             outFile << cleaned << std::endl;
+            ++keptLines;
+        } else {
+            ++duplicateLines;
         }
     }
 
@@ -87,5 +97,10 @@ int main(int argc, char* argv[])
     }
 
     std::cout << "已清洗完成，输出文件: " << outPath << std::endl;
+    std::cout << "--- 清洗统计 ---" << std::endl;
+    std::cout << "原文件总行数: " << totalLines << std::endl;
+    std::cout << "去除空行数  : " << blankLines << std::endl;
+    std::cout << "去除重复行数: " << duplicateLines << std::endl;
+    std::cout << "最终保留行数: " << keptLines << std::endl;
     return 0;
 }
